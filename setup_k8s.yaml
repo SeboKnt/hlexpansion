@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  roles:
+    - prep_ssh
+
+- hosts: all
+  become: true
+  roles:
+    - install_k8s

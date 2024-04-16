@@ -1,0 +1,15 @@
+---
+- name: Remove old SSH keys
+  known_hosts:
+    path: "{{ lookup('env','HOME') }}/.ssh/known_hosts"
+    name: "{{ hostvars[item]['ansible_host'] }}"
+    state: absent
+  with_items: "{{ groups['all'] }}"
+
+- name: Add new SSH keys
+  delegate_to: localhost
+  known_hosts:
+    path: "{{ lookup('env','HOME') }}/.ssh/known_hosts"
+    name: "{{ hostvars[item]['ansible_host'] }}"
+    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + hostvars[item]['ansible_host']) }}"
+  with_items: "{{ groups['all'] }}"

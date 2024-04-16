@@ -1,0 +1,8 @@
+- name: Include tasks
+  include_tasks: "{{ item }}"
+  loop:
+    - pkgs.yaml
+    - prep_srv.yaml
+    - containerd.yaml
+    - init.yaml
+    - cilium.yaml

@@ -1,0 +1,27 @@
+---
+- name: Determine server aarch
+  shell: uname -m
+  register: arch
+
+- name: Set CLI_ARCH based on architecture
+  set_fact:
+    CLI_ARCH: "{{ 'amd64' if arch.stdout == 'amd64' else 'arm64' }}"
+
+- name: Download Cilium CLI
+  get_url:
+    url: "https://github.com/cilium/cilium-cli/releases/download/v0.16.4/cilium-linux-{{ CLI_ARCH }}.tar.gz"
+    dest: "/tmp/cilium-linux-{{ CLI_ARCH }}.tar.gz"
+
+- name: Extract Cilium CLI
+  unarchive:
+    src: "/tmp/cilium-linux-{{ CLI_ARCH }}.tar.gz"
+    dest: "/usr/local/bin"
+    remote_src: yes
+
+- name: Initialize CNI
+  ansible.builtin.command:
+    cmd: cilium install --version 1.15.3
+  register: result
+  until: result is succeeded
+  retries: 5
+  delay: 10

@@ -1,0 +1,22 @@
+---
+- name: Pull Kubernetes
+  ansible.builtin.command:
+    cmd: kubeadm config images pull
+
+- name: Initialize Kubernetes
+  ansible.builtin.command:
+    cmd: kubeadm init 
+
+- name: Create .kube directory in home
+  ansible.builtin.file:
+    path: "/home/vagrant/.kube"
+    state: directory
+
+- name: Copy Kubernetes admin.conf to user's kube config
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/home/vagrant/.kube/config"
+    owner: "vagrant"
+    group: "vagrant"
+    mode: '0644'
+    remote_src: yes
